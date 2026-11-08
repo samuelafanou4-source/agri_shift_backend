@@ -286,7 +286,7 @@ Remove-Item Env:DATABASE_URL
 Remarques :
 - `DATABASE_URL` est lu par `app/config.py` (pydantic-settings). Une variable d'environnement a la priorité
   sur le fichier `apps/api/.env`. Vous pouvez aussi mettre l'URL dans `apps/api/.env` (il est dans
-  `.gitignore`), mais **jamais** dans `.env.example`.
+  `.gitignore`). La liste des variables est dans la section « Configuration » du `README.md` (avec des valeurs d'exemple, jamais la vraie URL).
 - Le seed lit des fichiers locaux : `data/seed/*.json`, `data/synthetic/parcelles_demo.json`,
   `data/processed/dekad_*.csv`, `packs/manifest.json` et `data/raw/power/*.meta.json` (pour l'altitude).
   Comme `data/raw/` est dans `.gitignore`, **lancez le seed depuis votre PC** et pas depuis un clone neuf :
@@ -459,7 +459,7 @@ de plus sur les tables déjà protégées).
 
 Points de vigilance dans ce dépôt :
 - `apps/api/.env` et `apps/api/*.db` sont déjà dans `.gitignore`. Vérifiez qu'ils le restent.
-- Ne mettez jamais l'URL Supabase dans `apps/api/.env.example`, `README.md`, `docker-compose.yml`,
+- Ne mettez jamais l'URL Supabase dans `README.md` (section « Configuration » : exemples seulement), `docker-compose.yml`,
   `alembic.ini` ni dans un message de commit.
 - Si le mot de passe se retrouve un jour dans un commit poussé, changez-le immédiatement dans Supabase
   (Reset database password). Le supprimer de l'historique ne suffit pas.

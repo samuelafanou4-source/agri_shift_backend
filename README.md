@@ -60,7 +60,24 @@ $body = '{"zone_id":"kara_kara","soil_id":"sandy_loam","previous_crop_id":"sorgh
 Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/v1/rotation/recommend -ContentType "application/json" -Body $body
 ```
 
-Postgres : copier `apps/api/.env.example` en `apps/api/.env` (URL `postgresql+asyncpg://…`).
+## Configuration
+
+L'API lit ses réglages dans les variables d'environnement, ou à défaut dans le fichier `apps/api/.env` (ignoré par git, **à ne jamais committer**). Créez ce fichier avec les lignes ci-dessous et remplacez les valeurs d'exemple (aucune n'est un vrai secret) :
+
+```dotenv
+# Postgres (Supabase, Session pooler port 5432) ; sans cette ligne : SQLite local apps/api/fieldshift.db
+DATABASE_URL=postgresql+asyncpg://postgres.<ref>:<mot_de_passe>@<hote-pooler>:5432/postgres?ssl=require
+# Chemins relatifs résolus depuis apps/api
+PACKS_DIR=../../packs
+DATA_DIR=../../data
+# Une ou plusieurs origines du frontend, séparées par des virgules
+FRONTEND_ORIGIN=http://localhost:3000
+RATE_LIMIT_PER_MIN=60
+LOG_LEVEL=info
+```
+
+Variantes de `DATABASE_URL` : Postgres local de `docker-compose.yml` → `postgresql+asyncpg://postgres:postgres@localhost:5432/fieldshift` ; SQLite → `sqlite+aiosqlite:///./fieldshift.db`. Mise en place de Supabase : [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md).
+
 Plan de secours démo : `python -m pipeline.build_packs --export-frontend` copie `packs/` vers `apps/web/public/packs/`.
 
 ## Docker (⚠️ non testé)
@@ -90,7 +107,7 @@ apps/api/
   app/schemas/              Pydantic (pack.py = contrat)
   app/routers/              health, zones, packs, engine, devices, sync, posts
   app/services/             paquets, seed, sync, synthèse, golden, rate limit
-  alembic/  tests/  Dockerfile  DECISIONS.md  .env.example
+  alembic/  tests/  Dockerfile  DECISIONS.md   (config : section « Configuration »)
 docker-compose.yml
 ```
 

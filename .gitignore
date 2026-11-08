@@ -3,13 +3,11 @@
 venv/
 env/
 
-# Secrets: every .env file except the committed example
+# Secrets: every .env file (variable list with example values: README, section "Configuration")
 .env
 .env.*
-!.env.example
 **/.env
 **/.env.*
-!**/.env.example
 
 # Local databases
 *.db
