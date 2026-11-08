@@ -1,0 +1,4 @@
+rule_id,condition,effect,score_delta_demo,source_type,explanation
+R001,previous_family == 'Fabaceae' and next_family == 'Poaceae',bonus,10,provisional_demo,Bonus de démonstration pour une légumineuse avant une céréale; ne garantit pas un meilleur rendement.
+R002,previous_family == next_family,penalty,-5,provisional_demo,Pénalité logicielle si deux cultures consécutives appartiennent à la même famille; règle simplifiée.
+R003,next_crop.water_need_class_demo == 'high' and scenario == 'dry',penalty,-10,provisional_demo,Pénalité de test pour culture à forte demande en eau dans un scénario sec.

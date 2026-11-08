@@ -1,0 +1,54 @@
+{
+  "dataset": "AGRI SHIFT provisional test pack",
+  "rules": [
+    {
+      "test_id": "V001",
+      "input": {
+        "previous_crop_id": "groundnut",
+        "next_crop_id": "maize",
+        "scenario": "baseline"
+      },
+      "expected_behavior": "Appliquer le bonus de démonstration R001 car Fabaceae précède Poaceae; signaler que le score est un score logiciel, pas une prédiction de rendement."
+    },
+    {
+      "test_id": "V002",
+      "input": {
+        "previous_crop_id": "maize",
+        "next_crop_id": "sorghum",
+        "scenario": "baseline"
+      },
+      "expected_behavior": "Appliquer la pénalité de démonstration R002 car les deux cultures sont dans la famille Poaceae."
+    },
+    {
+      "test_id": "V003",
+      "input": {
+        "previous_crop_id": "maize",
+        "next_crop_id": "rice",
+        "scenario": "dry_minus20"
+      },
+      "expected_behavior": "Appliquer R002 et R003 selon les règles provisoires; vérifier que les explications de chaque règle sont retournées."
+    },
+    {
+      "test_id": "V004",
+      "input": {
+        "zone_id": "kara_kara",
+        "scenario": "dry_minus20"
+      },
+      "expected_behavior": "La baisse de pluie est explicitement un scénario synthétique et ne doit jamais être étiquetée comme prévision réelle."
+    },
+    {
+      "test_id": "V005",
+      "input": {
+        "climate_row_source_type": "synthetic_demo"
+      },
+      "expected_behavior": "L'interface affiche un badge ou une mention 'DONNÉES SYNTHÉTIQUES — TEST UNIQUEMENT'."
+    },
+    {
+      "test_id": "V006",
+      "input": {
+        "climate_row_source_type": "public_historical_reanalysis"
+      },
+      "expected_behavior": "L'interface affiche la source, la période, les unités et l'avertissement 'réanalyse, pas mesure de parcelle'."
+    }
+  ]
+}

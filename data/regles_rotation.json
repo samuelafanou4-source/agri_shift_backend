@@ -1,0 +1,26 @@
+[
+  {
+    "rule_id": "R001",
+    "condition": "previous_family == 'Fabaceae' and next_family == 'Poaceae'",
+    "effect": "bonus",
+    "score_delta_demo": 10,
+    "source_type": "provisional_demo",
+    "explanation": "Bonus de démonstration pour une légumineuse avant une céréale; ne garantit pas un meilleur rendement."
+  },
+  {
+    "rule_id": "R002",
+    "condition": "previous_family == next_family",
+    "effect": "penalty",
+    "score_delta_demo": -5,
+    "source_type": "provisional_demo",
+    "explanation": "Pénalité logicielle si deux cultures consécutives appartiennent à la même famille; règle simplifiée."
+  },
+  {
+    "rule_id": "R003",
+    "condition": "next_crop.water_need_class_demo == 'high' and scenario == 'dry'",
+    "effect": "penalty",
+    "score_delta_demo": -10,
+    "source_type": "provisional_demo",
+    "explanation": "Pénalité de test pour culture à forte demande en eau dans un scénario sec."
+  }
+]

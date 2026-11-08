@@ -1,0 +1,74 @@
+[
+  {
+    "zone_id": "maritime_lome",
+    "date": "2026-04-01",
+    "precipitation_mm": 18,
+    "temperature_mean_c": 29.0,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  },
+  {
+    "zone_id": "maritime_lome",
+    "date": "2026-04-02",
+    "precipitation_mm": 6,
+    "temperature_mean_c": 30.0,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  },
+  {
+    "zone_id": "maritime_lome",
+    "date": "2026-04-03",
+    "precipitation_mm": 0,
+    "temperature_mean_c": 31.0,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  },
+  {
+    "zone_id": "plateaux_kpalime",
+    "date": "2026-04-01",
+    "precipitation_mm": 25,
+    "temperature_mean_c": 27.0,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  },
+  {
+    "zone_id": "plateaux_kpalime",
+    "date": "2026-04-02",
+    "precipitation_mm": 12,
+    "temperature_mean_c": 28.0,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  },
+  {
+    "zone_id": "plateaux_kpalime",
+    "date": "2026-04-03",
+    "precipitation_mm": 4,
+    "temperature_mean_c": 28.5,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  },
+  {
+    "zone_id": "kara_kara",
+    "date": "2026-04-01",
+    "precipitation_mm": 8,
+    "temperature_mean_c": 31.0,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  },
+  {
+    "zone_id": "kara_kara",
+    "date": "2026-04-02",
+    "precipitation_mm": 0,
+    "temperature_mean_c": 32.0,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  },
+  {
+    "zone_id": "kara_kara",
+    "date": "2026-04-03",
+    "precipitation_mm": 2,
+    "temperature_mean_c": 33.0,
+    "source_type": "synthetic_demo",
+    "quality_note": "invented for software testing; not observed weather"
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "plot_id": "plot_demo_001",
+    "zone_id": "maritime_lome",
+    "area_ha": 1.0,
+    "soil_texture_demo": "sandy_loam",
+    "previous_crop_id": "maize",
+    "farmer_priority_demo": "food_security",
+    "source_type": "synthetic_demo",
+    "quality_note": "Profil entièrement fictif."
+  },
+  {
+    "plot_id": "plot_demo_002",
+    "zone_id": "plateaux_kpalime",
+    "area_ha": 0.7,
+    "soil_texture_demo": "loam",
+    "previous_crop_id": "groundnut",
+    "farmer_priority_demo": "balanced",
+    "source_type": "synthetic_demo",
+    "quality_note": "Profil entièrement fictif."
+  },
+  {
+    "plot_id": "plot_demo_003",
+    "zone_id": "kara_kara",
+    "area_ha": 1.5,
+    "soil_texture_demo": "sandy_loam",
+    "previous_crop_id": "sorghum",
+    "farmer_priority_demo": "drought_resilience",
+    "source_type": "synthetic_demo",
+    "quality_note": "Profil entièrement fictif."
+  }
+]

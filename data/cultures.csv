@@ -1,0 +1,6 @@
+crop_id,name_fr,cycle_days_demo,water_need_class_demo,drought_tolerance_demo,family,nitrogen_fixing,season_note,source_type,quality_note
+maize,Maïs,100,medium_high,low_medium,Poaceae,False,À renseigner/valider par zone et calendrier local,provisional_demo,Cycle et classes indicatifs pour tests; à valider par agronome/localement.
+sorghum,Sorgho,110,medium,high,Poaceae,False,À renseigner/valider par zone et calendrier local,provisional_demo,Cycle et classes indicatifs pour tests; à valider par agronome/localement.
+rice,Riz,120,high,low,Poaceae,False,Système pluvial/irrigué à préciser,provisional_demo,Cycle et classes indicatifs pour tests; variété et système de culture à préciser.
+groundnut,Arachide,95,medium,medium,Fabaceae,True,À renseigner/valider par zone et calendrier local,provisional_demo,Cycle et classes indicatifs pour tests; à valider par agronome/localement.
+cowpea,Niébé,75,low_medium,medium_high,Fabaceae,True,À renseigner/valider par zone et calendrier local,provisional_demo,Cycle et classes indicatifs pour tests; à valider par agronome/localement.

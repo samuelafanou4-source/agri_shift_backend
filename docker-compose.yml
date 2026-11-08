@@ -1,0 +1,37 @@
+# Local Postgres + API. Not tested on the dev machine (Docker not installed) — see README.
+#   docker compose up -d db        # Postgres only (then run the API locally with DATABASE_URL)
+#   docker compose up --build      # Postgres + API on http://localhost:8000/api/v1/health
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: fieldshift
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fieldshift"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@db:5432/fieldshift
+      FRONTEND_ORIGIN: http://localhost:3000
+      RATE_LIMIT_PER_MIN: "60"
+      LOG_LEVEL: info
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:

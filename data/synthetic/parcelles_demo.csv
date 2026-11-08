@@ -1,0 +1,4 @@
+plot_id,zone_id,area_ha,soil_texture_demo,previous_crop_id,farmer_priority_demo,source_type,quality_note
+plot_demo_001,maritime_lome,1.0,sandy_loam,maize,food_security,synthetic_demo,Profil entièrement fictif.
+plot_demo_002,plateaux_kpalime,0.7,loam,groundnut,balanced,synthetic_demo,Profil entièrement fictif.
+plot_demo_003,kara_kara,1.5,sandy_loam,sorghum,drought_resilience,synthetic_demo,Profil entièrement fictif.

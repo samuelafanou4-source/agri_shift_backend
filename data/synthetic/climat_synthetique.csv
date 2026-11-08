@@ -1,0 +1,10 @@
+zone_id,date,precipitation_mm,temperature_mean_c,source_type,quality_note
+maritime_lome,2026-04-01,18,29.0,synthetic_demo,invented for software testing; not observed weather
+maritime_lome,2026-04-02,6,30.0,synthetic_demo,invented for software testing; not observed weather
+maritime_lome,2026-04-03,0,31.0,synthetic_demo,invented for software testing; not observed weather
+plateaux_kpalime,2026-04-01,25,27.0,synthetic_demo,invented for software testing; not observed weather
+plateaux_kpalime,2026-04-02,12,28.0,synthetic_demo,invented for software testing; not observed weather
+plateaux_kpalime,2026-04-03,4,28.5,synthetic_demo,invented for software testing; not observed weather
+kara_kara,2026-04-01,8,31.0,synthetic_demo,invented for software testing; not observed weather
+kara_kara,2026-04-02,0,32.0,synthetic_demo,invented for software testing; not observed weather
+kara_kara,2026-04-03,2,33.0,synthetic_demo,invented for software testing; not observed weather

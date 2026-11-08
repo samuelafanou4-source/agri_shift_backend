@@ -1,0 +1,26 @@
+[
+  {
+    "zone_id": "maritime_lome",
+    "zone_name": "Maritime - point de référence Lomé",
+    "region": "Maritime",
+    "latitude": 6.1725,
+    "longitude": 1.2314,
+    "coordinate_note": "Point de référence approximatif pour démonstration; pas une parcelle agricole."
+  },
+  {
+    "zone_id": "plateaux_kpalime",
+    "zone_name": "Plateaux - point de référence Kpalimé",
+    "region": "Plateaux",
+    "latitude": 6.9,
+    "longitude": 0.6333,
+    "coordinate_note": "Point de référence approximatif pour démonstration; pas une parcelle agricole."
+  },
+  {
+    "zone_id": "kara_kara",
+    "zone_name": "Kara - point de référence Kara",
+    "region": "Kara",
+    "latitude": 9.5511,
+    "longitude": 1.1861,
+    "coordinate_note": "Point de référence approximatif pour démonstration; pas une parcelle agricole."
+  }
+]

@@ -1,0 +1,882 @@
+{
+  "$defs": {
+    "Climate": {
+      "additionalProperties": false,
+      "properties": {
+        "source_type": {
+          "enum": [
+            "nasa_power",
+            "public_historical_reanalysis",
+            "provisional_demo",
+            "synthetic_demo",
+            "synthetic_scenario",
+            "computed"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "source_name": {
+          "title": "Source Name",
+          "type": "string"
+        },
+        "baseline_period": {
+          "title": "Baseline Period",
+          "type": "string"
+        },
+        "units": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Units",
+          "type": "object"
+        },
+        "dekads": {
+          "items": {
+            "$ref": "#/$defs/DekadClimate"
+          },
+          "title": "Dekads",
+          "type": "array"
+        },
+        "trend": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Trend"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "warnings_fr": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Warnings Fr",
+          "type": "array"
+        }
+      },
+      "required": [
+        "source_type",
+        "source_name",
+        "baseline_period",
+        "units",
+        "dekads"
+      ],
+      "title": "Climate",
+      "type": "object"
+    },
+    "Crop": {
+      "additionalProperties": false,
+      "properties": {
+        "crop_id": {
+          "title": "Crop Id",
+          "type": "string"
+        },
+        "name_fr": {
+          "title": "Name Fr",
+          "type": "string"
+        },
+        "family": {
+          "title": "Family",
+          "type": "string"
+        },
+        "n_fixing": {
+          "title": "N Fixing",
+          "type": "boolean"
+        },
+        "cycle_days": {
+          "exclusiveMinimum": 0,
+          "title": "Cycle Days",
+          "type": "integer"
+        },
+        "water_need": {
+          "enum": [
+            "low",
+            "low_medium",
+            "medium",
+            "medium_high",
+            "high"
+          ],
+          "title": "Water Need",
+          "type": "string"
+        },
+        "drought_tolerance": {
+          "enum": [
+            "low",
+            "low_medium",
+            "medium",
+            "medium_high",
+            "high"
+          ],
+          "title": "Drought Tolerance",
+          "type": "string"
+        },
+        "food_staple": {
+          "title": "Food Staple",
+          "type": "boolean"
+        },
+        "kc_ini": {
+          "exclusiveMinimum": 0,
+          "title": "Kc Ini",
+          "type": "number"
+        },
+        "kc_mid": {
+          "exclusiveMinimum": 0,
+          "title": "Kc Mid",
+          "type": "number"
+        },
+        "kc_end": {
+          "exclusiveMinimum": 0,
+          "title": "Kc End",
+          "type": "number"
+        },
+        "root_depth_m": {
+          "exclusiveMinimum": 0,
+          "title": "Root Depth M",
+          "type": "number"
+        },
+        "depletion_p": {
+          "exclusiveMaximum": 1,
+          "exclusiveMinimum": 0,
+          "title": "Depletion P",
+          "type": "number"
+        },
+        "phases": {
+          "$ref": "#/$defs/Phases"
+        },
+        "source_type": {
+          "enum": [
+            "nasa_power",
+            "public_historical_reanalysis",
+            "provisional_demo",
+            "synthetic_demo",
+            "synthetic_scenario",
+            "computed"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "source_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Note"
+        }
+      },
+      "required": [
+        "crop_id",
+        "name_fr",
+        "family",
+        "n_fixing",
+        "cycle_days",
+        "water_need",
+        "drought_tolerance",
+        "food_staple",
+        "kc_ini",
+        "kc_mid",
+        "kc_end",
+        "root_depth_m",
+        "depletion_p",
+        "phases",
+        "source_type"
+      ],
+      "title": "Crop",
+      "type": "object"
+    },
+    "DekadClimate": {
+      "additionalProperties": false,
+      "properties": {
+        "dekad": {
+          "maximum": 36,
+          "minimum": 1,
+          "title": "Dekad",
+          "type": "integer"
+        },
+        "label_fr": {
+          "title": "Label Fr",
+          "type": "string"
+        },
+        "p_mm": {
+          "title": "P Mm",
+          "type": "number"
+        },
+        "p_p20": {
+          "title": "P P20",
+          "type": "number"
+        },
+        "p_cv": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P Cv"
+        },
+        "et0_mm": {
+          "title": "Et0 Mm",
+          "type": "number"
+        },
+        "tmean_c": {
+          "title": "Tmean C",
+          "type": "number"
+        }
+      },
+      "required": [
+        "dekad",
+        "label_fr",
+        "p_mm",
+        "p_p20",
+        "et0_mm",
+        "tmean_c"
+      ],
+      "title": "DekadClimate",
+      "type": "object"
+    },
+    "PackSeason": {
+      "additionalProperties": false,
+      "properties": {
+        "season_id": {
+          "title": "Season Id",
+          "type": "string"
+        },
+        "label_fr": {
+          "title": "Label Fr",
+          "type": "string"
+        },
+        "sowing_dekad": {
+          "maximum": 36,
+          "minimum": 1,
+          "title": "Sowing Dekad",
+          "type": "integer"
+        },
+        "sowing_source": {
+          "enum": [
+            "computed",
+            "provisional_demo"
+          ],
+          "title": "Sowing Source",
+          "type": "string"
+        },
+        "provisional_sowing_dekad": {
+          "maximum": 36,
+          "minimum": 1,
+          "title": "Provisional Sowing Dekad",
+          "type": "integer"
+        },
+        "onset_dekad_clim": {
+          "anyOf": [
+            {
+              "maximum": 36,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Onset Dekad Clim"
+        }
+      },
+      "required": [
+        "season_id",
+        "label_fr",
+        "sowing_dekad",
+        "sowing_source",
+        "provisional_sowing_dekad"
+      ],
+      "title": "PackSeason",
+      "type": "object"
+    },
+    "PackZone": {
+      "additionalProperties": false,
+      "properties": {
+        "zone_id": {
+          "title": "Zone Id",
+          "type": "string"
+        },
+        "name_fr": {
+          "title": "Name Fr",
+          "type": "string"
+        },
+        "region": {
+          "title": "Region",
+          "type": "string"
+        },
+        "latitude": {
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "title": "Longitude",
+          "type": "number"
+        },
+        "elevation_m": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Elevation M"
+        },
+        "seasons": {
+          "items": {
+            "$ref": "#/$defs/PackSeason"
+          },
+          "minItems": 1,
+          "title": "Seasons",
+          "type": "array"
+        },
+        "coordinate_note": {
+          "title": "Coordinate Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "zone_id",
+        "name_fr",
+        "region",
+        "latitude",
+        "longitude",
+        "seasons",
+        "coordinate_note"
+      ],
+      "title": "PackZone",
+      "type": "object"
+    },
+    "Phases": {
+      "additionalProperties": false,
+      "properties": {
+        "initial": {
+          "exclusiveMinimum": 0,
+          "title": "Initial",
+          "type": "number"
+        },
+        "development": {
+          "exclusiveMinimum": 0,
+          "title": "Development",
+          "type": "number"
+        },
+        "mid": {
+          "exclusiveMinimum": 0,
+          "title": "Mid",
+          "type": "number"
+        },
+        "late": {
+          "exclusiveMinimum": 0,
+          "title": "Late",
+          "type": "number"
+        }
+      },
+      "required": [
+        "initial",
+        "development",
+        "mid",
+        "late"
+      ],
+      "title": "Phases",
+      "type": "object"
+    },
+    "PriorityBonus": {
+      "additionalProperties": false,
+      "properties": {
+        "food_staple": {
+          "title": "Food Staple",
+          "type": "number"
+        },
+        "drought_level_factor": {
+          "title": "Drought Level Factor",
+          "type": "number"
+        }
+      },
+      "required": [
+        "food_staple",
+        "drought_level_factor"
+      ],
+      "title": "PriorityBonus",
+      "type": "object"
+    },
+    "ProvenanceItem": {
+      "additionalProperties": false,
+      "properties": {
+        "item": {
+          "title": "Item",
+          "type": "string"
+        },
+        "source_type": {
+          "enum": [
+            "nasa_power",
+            "public_historical_reanalysis",
+            "provisional_demo",
+            "synthetic_demo",
+            "synthetic_scenario",
+            "computed"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "item",
+        "source_type"
+      ],
+      "title": "ProvenanceItem",
+      "type": "object"
+    },
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "rule_id": {
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "effect": {
+          "enum": [
+            "bonus",
+            "penalty"
+          ],
+          "title": "Effect",
+          "type": "string"
+        },
+        "delta": {
+          "title": "Delta",
+          "type": "number"
+        },
+        "all": {
+          "items": {
+            "$ref": "#/$defs/RuleCondition"
+          },
+          "minItems": 1,
+          "title": "All",
+          "type": "array"
+        },
+        "explanation_fr": {
+          "title": "Explanation Fr",
+          "type": "string"
+        },
+        "source_type": {
+          "enum": [
+            "nasa_power",
+            "public_historical_reanalysis",
+            "provisional_demo",
+            "synthetic_demo",
+            "synthetic_scenario",
+            "computed"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "source_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Note"
+        }
+      },
+      "required": [
+        "rule_id",
+        "effect",
+        "delta",
+        "all",
+        "explanation_fr",
+        "source_type"
+      ],
+      "title": "Rule",
+      "type": "object"
+    },
+    "RuleCondition": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "pattern": "^(prev|next|scenario)\\.[a-z_]+$",
+          "title": "Field",
+          "type": "string"
+        },
+        "op": {
+          "enum": [
+            "eq",
+            "neq",
+            "lt",
+            "lte",
+            "gt",
+            "gte",
+            "in",
+            "eq_field"
+          ],
+          "title": "Op",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value"
+        }
+      },
+      "required": [
+        "field",
+        "op",
+        "value"
+      ],
+      "title": "RuleCondition",
+      "type": "object"
+    },
+    "Scenario": {
+      "additionalProperties": false,
+      "properties": {
+        "scenario_id": {
+          "title": "Scenario Id",
+          "type": "string"
+        },
+        "label_fr": {
+          "title": "Label Fr",
+          "type": "string"
+        },
+        "rainfall_change_pct": {
+          "title": "Rainfall Change Pct",
+          "type": "number"
+        },
+        "temperature_change_c": {
+          "title": "Temperature Change C",
+          "type": "number"
+        },
+        "source_type": {
+          "enum": [
+            "nasa_power",
+            "public_historical_reanalysis",
+            "provisional_demo",
+            "synthetic_demo",
+            "synthetic_scenario",
+            "computed"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "note_fr": {
+          "title": "Note Fr",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scenario_id",
+        "label_fr",
+        "rainfall_change_pct",
+        "temperature_change_c",
+        "source_type",
+        "note_fr"
+      ],
+      "title": "Scenario",
+      "type": "object"
+    },
+    "Scoring": {
+      "additionalProperties": false,
+      "properties": {
+        "season_resilience_base": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "propertyNames": {
+            "enum": [
+              "food_security",
+              "drought_resilience",
+              "balanced"
+            ]
+          },
+          "title": "Season Resilience Base",
+          "type": "object"
+        },
+        "priority_bonus": {
+          "additionalProperties": {
+            "$ref": "#/$defs/PriorityBonus"
+          },
+          "propertyNames": {
+            "enum": [
+              "food_security",
+              "drought_resilience",
+              "balanced"
+            ]
+          },
+          "title": "Priority Bonus",
+          "type": "object"
+        },
+        "drought_levels": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "propertyNames": {
+            "enum": [
+              "low",
+              "low_medium",
+              "medium",
+              "medium_high",
+              "high"
+            ]
+          },
+          "title": "Drought Levels",
+          "type": "object"
+        },
+        "phase_weights": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "propertyNames": {
+            "enum": [
+              "initial",
+              "development",
+              "mid",
+              "late"
+            ]
+          },
+          "title": "Phase Weights",
+          "type": "object"
+        },
+        "et0_temp_sensitivity_per_c": {
+          "title": "Et0 Temp Sensitivity Per C",
+          "type": "number"
+        },
+        "initial_soil_water_fraction": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Initial Soil Water Fraction",
+          "type": "number"
+        },
+        "horizon_default": {
+          "minimum": 2,
+          "title": "Horizon Default",
+          "type": "integer"
+        },
+        "horizon_max": {
+          "minimum": 2,
+          "title": "Horizon Max",
+          "type": "integer"
+        },
+        "top_n": {
+          "minimum": 1,
+          "title": "Top N",
+          "type": "integer"
+        },
+        "source_type": {
+          "enum": [
+            "nasa_power",
+            "public_historical_reanalysis",
+            "provisional_demo",
+            "synthetic_demo",
+            "synthetic_scenario",
+            "computed"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "season_resilience_base",
+        "priority_bonus",
+        "drought_levels",
+        "phase_weights",
+        "et0_temp_sensitivity_per_c",
+        "initial_soil_water_fraction",
+        "horizon_default",
+        "horizon_max",
+        "top_n",
+        "source_type"
+      ],
+      "title": "Scoring",
+      "type": "object"
+    },
+    "Soil": {
+      "additionalProperties": false,
+      "properties": {
+        "soil_id": {
+          "title": "Soil Id",
+          "type": "string"
+        },
+        "label_fr": {
+          "title": "Label Fr",
+          "type": "string"
+        },
+        "taw_mm_per_m": {
+          "exclusiveMinimum": 0,
+          "title": "Taw Mm Per M",
+          "type": "number"
+        },
+        "source_type": {
+          "enum": [
+            "nasa_power",
+            "public_historical_reanalysis",
+            "provisional_demo",
+            "synthetic_demo",
+            "synthetic_scenario",
+            "computed"
+          ],
+          "title": "Source Type",
+          "type": "string"
+        },
+        "source_note": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Note"
+        }
+      },
+      "required": [
+        "soil_id",
+        "label_fr",
+        "taw_mm_per_m",
+        "source_type"
+      ],
+      "title": "Soil",
+      "type": "object"
+    },
+    "Trend": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_period": {
+          "title": "Baseline Period",
+          "type": "string"
+        },
+        "recent_period": {
+          "title": "Recent Period",
+          "type": "string"
+        },
+        "p_change_pct": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P Change Pct"
+        },
+        "t_change_c": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "T Change C"
+        },
+        "note_fr": {
+          "default": "Constat historique, pas une prévision.",
+          "title": "Note Fr",
+          "type": "string"
+        }
+      },
+      "required": [
+        "baseline_period",
+        "recent_period"
+      ],
+      "title": "Trend",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "pack_version": {
+      "title": "Pack Version",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "zone": {
+      "$ref": "#/$defs/PackZone"
+    },
+    "climate": {
+      "$ref": "#/$defs/Climate"
+    },
+    "crops": {
+      "items": {
+        "$ref": "#/$defs/Crop"
+      },
+      "minItems": 1,
+      "title": "Crops",
+      "type": "array"
+    },
+    "soils": {
+      "items": {
+        "$ref": "#/$defs/Soil"
+      },
+      "minItems": 1,
+      "title": "Soils",
+      "type": "array"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/Rule"
+      },
+      "title": "Rules",
+      "type": "array"
+    },
+    "scenarios": {
+      "items": {
+        "$ref": "#/$defs/Scenario"
+      },
+      "minItems": 1,
+      "title": "Scenarios",
+      "type": "array"
+    },
+    "scoring": {
+      "$ref": "#/$defs/Scoring"
+    },
+    "data_provenance": {
+      "items": {
+        "$ref": "#/$defs/ProvenanceItem"
+      },
+      "title": "Data Provenance",
+      "type": "array"
+    }
+  },
+  "required": [
+    "pack_version",
+    "generated_at",
+    "zone",
+    "climate",
+    "crops",
+    "soils",
+    "rules",
+    "scenarios",
+    "scoring",
+    "data_provenance"
+  ],
+  "title": "ZonePack",
+  "type": "object"
+}

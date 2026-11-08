@@ -1,0 +1,18 @@
+{
+  "generated_on": "2026-10-27",
+  "pack_version": "0.1.0",
+  "historical_observations_included": false,
+  "reason": "Le pack fournit un script reproductible pour télécharger les données historiques publiques à l'exécution; les données météo incluses dans le pack sont explicitement synthétiques.",
+  "public_sources": [
+    {
+      "name": "Open-Meteo Historical Weather API",
+      "url": "https://open-meteo.com/en/docs/historical-weather-api",
+      "purpose": "Téléchargement de séries historiques de température, précipitations et ET0."
+    },
+    {
+      "name": "FAO GIEWS Togo",
+      "url": "https://www.fao.org/giews/countrybrief/country.jsp?code=TGO&lang=en",
+      "purpose": "Contexte agricole du Togo; consulter les bulletins et vérifier la période."
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+scenario_id,rainfall_change_pct,temperature_change_c,source_type,note
+baseline,0,0,synthetic_scenario,Scénario de référence fictif pour tests.
+dry_minus20,-20,0,synthetic_scenario,Stress-test hypothétique; ce n'est pas une prévision.
+hot_plus2,0,2,synthetic_scenario,Stress-test hypothétique; ce n'est pas une prévision.
+dry_hot,-20,2,synthetic_scenario,Stress-test hypothétique; ce n'est pas une prévision.

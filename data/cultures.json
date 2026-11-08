@@ -1,0 +1,62 @@
+[
+  {
+    "crop_id": "maize",
+    "name_fr": "Maïs",
+    "cycle_days_demo": 100,
+    "water_need_class_demo": "medium_high",
+    "drought_tolerance_demo": "low_medium",
+    "family": "Poaceae",
+    "nitrogen_fixing": false,
+    "season_note": "À renseigner/valider par zone et calendrier local",
+    "source_type": "provisional_demo",
+    "quality_note": "Cycle et classes indicatifs pour tests; à valider par agronome/localement."
+  },
+  {
+    "crop_id": "sorghum",
+    "name_fr": "Sorgho",
+    "cycle_days_demo": 110,
+    "water_need_class_demo": "medium",
+    "drought_tolerance_demo": "high",
+    "family": "Poaceae",
+    "nitrogen_fixing": false,
+    "season_note": "À renseigner/valider par zone et calendrier local",
+    "source_type": "provisional_demo",
+    "quality_note": "Cycle et classes indicatifs pour tests; à valider par agronome/localement."
+  },
+  {
+    "crop_id": "rice",
+    "name_fr": "Riz",
+    "cycle_days_demo": 120,
+    "water_need_class_demo": "high",
+    "drought_tolerance_demo": "low",
+    "family": "Poaceae",
+    "nitrogen_fixing": false,
+    "season_note": "Système pluvial/irrigué à préciser",
+    "source_type": "provisional_demo",
+    "quality_note": "Cycle et classes indicatifs pour tests; variété et système de culture à préciser."
+  },
+  {
+    "crop_id": "groundnut",
+    "name_fr": "Arachide",
+    "cycle_days_demo": 95,
+    "water_need_class_demo": "medium",
+    "drought_tolerance_demo": "medium",
+    "family": "Fabaceae",
+    "nitrogen_fixing": true,
+    "season_note": "À renseigner/valider par zone et calendrier local",
+    "source_type": "provisional_demo",
+    "quality_note": "Cycle et classes indicatifs pour tests; à valider par agronome/localement."
+  },
+  {
+    "crop_id": "cowpea",
+    "name_fr": "Niébé",
+    "cycle_days_demo": 75,
+    "water_need_class_demo": "low_medium",
+    "drought_tolerance_demo": "medium_high",
+    "family": "Fabaceae",
+    "nitrogen_fixing": true,
+    "season_note": "À renseigner/valider par zone et calendrier local",
+    "source_type": "provisional_demo",
+    "quality_note": "Cycle et classes indicatifs pour tests; à valider par agronome/localement."
+  }
+]

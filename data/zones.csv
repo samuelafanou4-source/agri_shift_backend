@@ -1,0 +1,4 @@
+zone_id,zone_name,region,latitude,longitude,coordinate_note
+maritime_lome,Maritime - point de référence Lomé,Maritime,6.1725,1.2314,Point de référence approximatif pour démonstration; pas une parcelle agricole.
+plateaux_kpalime,Plateaux - point de référence Kpalimé,Plateaux,6.9,0.6333,Point de référence approximatif pour démonstration; pas une parcelle agricole.
+kara_kara,Kara - point de référence Kara,Kara,9.5511,1.1861,Point de référence approximatif pour démonstration; pas une parcelle agricole.
