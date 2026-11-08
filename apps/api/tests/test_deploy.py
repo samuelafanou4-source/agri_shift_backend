@@ -83,3 +83,14 @@ async def test_register_rate_limit_per_client_behind_proxy(settings, seeded_db):
     # A client cannot escape its limit by prepending fake addresses.
     spoof = ["198.51.100.9", "6.6.6.6, 198.51.100.9"]
     assert await _register_codes(settings, seeded_db, True, spoof) == [201, 429]
+
+
+def test_repo_root_when_only_apps_api_is_deployed():
+    """Bug (first cloud deploy): apps/api is deployed as /app, `Path('/app').parents[1]` raised
+    IndexError at import time and the app never started."""
+    from pathlib import PurePosixPath
+
+    from app.config import repo_root
+
+    assert repo_root(PurePosixPath("/app")) == PurePosixPath("/app")
+    assert repo_root(PurePosixPath("/home/u/repo/apps/api")) == PurePosixPath("/home/u/repo")

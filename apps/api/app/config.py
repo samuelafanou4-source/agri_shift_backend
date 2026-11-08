@@ -7,8 +7,17 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-API_ROOT = Path(__file__).resolve().parents[1]  # apps/api
-REPO_ROOT = API_ROOT.parents[1]  # repository root
+API_ROOT = Path(__file__).resolve().parents[1]  # apps/api (or /app on FastAPI Cloud)
+
+
+def repo_root(api_root: Path) -> Path:
+    """Repository root = two levels above apps/api. On FastAPI Cloud only apps/api is deployed
+    (as /app), so there is no such parent: fall back to api_root itself."""
+    parents = api_root.parents
+    return parents[1] if len(parents) > 1 else api_root
+
+
+REPO_ROOT = repo_root(API_ROOT)
 # Sources of truth on the developer's PC (pipeline outputs). The API itself reads the copies made
 # inside apps/api by scripts/prepare_deploy.ps1, because FastAPI Cloud only uploads apps/api.
 REPO_PACKS_DIR = REPO_ROOT / "packs"
