@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Literal
-
 from pydantic import BaseModel, Field
 
 from app.schemas.common import R2, SourceType
@@ -112,15 +110,3 @@ class RotationResult(BaseModel):
     source_type: SourceType
     data_provenance: list[ProvenanceItem]
     disclaimer_fr: str = ROTATION_DISCLAIMER_FR
-
-
-EngineErrorCode = Literal[
-    "unknown_zone",
-    "unknown_crop",
-    "unknown_soil",
-    "unknown_scenario",
-    "invalid_sowing_dekad",
-    "invalid_horizon",
-    "invalid_priority",
-    "zone_mismatch",
-]
