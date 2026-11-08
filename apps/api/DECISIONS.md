@@ -117,4 +117,5 @@ Décisions prises pendant l'implémentation. Les décisions 1 à 12 ont été tr
 - **D-69 — Pas de migration ni de seed au démarrage** sur FastAPI Cloud (contrairement au `Dockerfile`, non utilisé) : `alembic upgrade head` et `python -m app.cli seed` se lancent depuis le PC.
 - **D-70 — `TRUST_PROXY_HEADERS`** (faux par défaut) : derrière le proxy, le limiteur de débit par IP de `/devices/register` prend la **dernière** entrée de `X-Forwarded-For` (celle ajoutée par le proxy) ; les entrées précédentes, fournies par le client, sont ignorées.
 - **D-71 — `.fastapicloudignore`** : exclut `tests/`, bases locales, `.env*`, caches et `Dockerfile` (56 fichiers, environ 220 Ko envoyés).
+- **D-72 — Premier déploiement** : échec à la vérification, car `apps/api` est déployé dans `/app` et `Path("/app").parents[1]` levait `IndexError` à l'import de `app.config`. Corrigé (`repo_root()` retombe sur `apps/api`, test ajouté). Python fixé à 3.11 par `apps/api/.python-version` (la plateforme avait choisi 3.15). Le champ « directory » de l'app est vide : on déploie depuis `apps/api`.
 

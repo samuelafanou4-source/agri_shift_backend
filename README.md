@@ -82,6 +82,49 @@ Variantes de `DATABASE_URL` : Postgres local de `docker-compose.yml` → `postgr
 
 Plan de secours démo : `python -m pipeline.build_packs --export-frontend` copie `packs/` vers `apps/web/public/packs/`.
 
+## Déploiement FastAPI Cloud
+
+API en ligne : **https://agri-shift-api.fastapicloud.dev** (documentation : [`/docs`](https://agri-shift-api.fastapicloud.dev/docs), santé : [`/api/v1/health`](https://agri-shift-api.fastapicloud.dev/api/v1/health)). App `agri-shift-api`, équipe `samuelafanou4-source`, région us-east-1, Python 3.11 (`apps/api/.python-version`).
+
+FastAPI Cloud n'envoie **que `apps/api`** (le dossier du `pyproject.toml`, entrée `app.main:app`). Les paquets et référentiels y sont donc copiés (`apps/api/packs`, `apps/api/data/seed`) et versionnés ; `apps/api/.fastapicloudignore` exclut les tests, `.env*`, les bases locales et les caches. Le `Dockerfile` n'est pas utilisé.
+
+Variables d'environnement définies sur l'app (aucune valeur secrète ici) :
+
+| Variable | Valeur |
+|---|---|
+| `DATABASE_URL` | **secret** : URL Supabase Session pooler (port 5432, `?ssl=require`), voir [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md) |
+| `PACKS_DIR` | `packs` |
+| `DATA_DIR` | `data` |
+| `FRONTEND_ORIGIN` | `http://localhost:3000` (⚠️ à remplacer par l'URL du frontend en production) |
+| `TRUST_PROXY_HEADERS` | `true` |
+
+**Règle** : l'app ne lance ni migration ni seed au démarrage. **Migration et seed se font toujours depuis le PC**, et **`scripts/prepare_deploy.ps1` se lance après chaque reconstruction des paquets** (ou modification de `data/seed/`) :
+
+```powershell
+# depuis la racine du dépôt, venv activé
+python -m pipeline.run_all                                       # si les paquets changent
+cd apps/api; python -m app.cli export-golden; cd ../..
+powershell -ExecutionPolicy Bypass -File scripts\prepare_deploy.ps1   # copie packs/ et data/seed/ dans apps/api
+cd apps/api
+python -m alembic upgrade head                                   # base Supabase (DATABASE_URL de apps/api/.env)
+python -m app.cli seed
+python -m pytest -q
+git add -A; git commit -m "..."; git push
+```
+
+Redéployer (depuis `apps/api`, après `fastapi login`) :
+
+```powershell
+fastapi deploy                                         # envoie apps/api et redémarre l'app
+fastapi cloud env set NOM valeur                       # modifie une variable (redéploie automatiquement)
+fastapi cloud env set --secret DATABASE_URL --value-stdin   # valeur lue sur l'entrée standard, jamais dans la commande
+fastapi cloud deployments list                         # état des déploiements
+fastapi cloud deployments build-logs                   # logs de build
+fastapi cloud logs --no-follow --tail 200              # logs de l'app
+```
+
+Le lien local avec l'app est dans `apps/api/.fastapicloud/` (ignoré par git).
+
 ## Docker (⚠️ non testé)
 
 Docker n'est **pas installé** sur le poste de développement : `apps/api/Dockerfile` et `docker-compose.yml` ont été écrits **sans pouvoir être testés**. De même, l'API n'a été exécutée que sur **SQLite** ; les modèles n'utilisent que des types portables (`JSON`, `Uuid`, `DateTime(timezone=True)`), mais la compatibilité Postgres reste à vérifier.
