@@ -1,5 +1,7 @@
 # Field Shift Togo — Backend
 
+> **Développeur frontend : commencez par [`docs/API_FRONTEND.md`](docs/API_FRONTEND.md)** (endpoints, règles hors ligne et de synchronisation, moteur, affichage obligatoire) et les types [`docs/api-types.ts`](docs/api-types.ts). API en ligne : https://agri-shift-api.fastapicloud.dev/api/v1
+
 Réponse au défi NASA Space Apps 2026 *« Field Shift: Adapting Farms with NASA Data »* (hackathon des 14 et 15 novembre 2026).
 Ce dépôt contient **uniquement le backend** : l'API FastAPI (`apps/api/`) et le pipeline de données NASA POWER (`pipeline/`). Le frontend (PWA hors ligne) est développé séparément.
 
