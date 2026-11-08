@@ -109,6 +109,16 @@ docker-compose.yml
 
 Erreurs : `{"error": {"code": "...", "message_fr": "..."}}`.
 
+### Changements de contrat du 2026-11-08 (à reporter côté frontend)
+
+- `/sync/pull` : un pull peut renvoyer des lignes déjà reçues pendant les 5 dernières secondes (curseur avec recouvrement) → mettre à jour par `id`, ne pas dupliquer. Les posts supprimés d'autres appareils arrivent avec `body: ""`.
+- `/sync/push` : au plus **500 lignes par entité** et par appel (sinon `422`) → découper les gros envois.
+- `/posts` : `next_before` est désormais une chaîne opaque `"<date>|<id>"` à renvoyer telle quelle dans `before`.
+- Toutes les erreurs, y compris les 500, ont le format ci-dessus ; un conflit d'écriture simultanée renvoie `409 conflict`.
+- `FRONTEND_ORIGIN` accepte plusieurs origines séparées par des virgules.
+
+Détails : `apps/api/DECISIONS.md`, D-53 à D-63.
+
 ## Données
 
 | Zone | Source climat | Paquet | ET0 moyenne | Pluie annuelle (normale 1991-2020) |

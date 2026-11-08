@@ -4,16 +4,15 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
-from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
-from sqlalchemy import select
+from sqlalchemy import and_, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app import models as m
 from app.deps import get_seed, get_session
 from app.errors import ApiError
-from app.schemas.sync import PostCreate, PostsPage, UtcDatetime, iso_z, to_utc
+from app.schemas.sync import PostCreate, PostsPage, iso_z, to_utc
 from app.services.clock import server_now
 from app.services.device_service import current_device
 from app.services.reference_data import SeedData
@@ -21,22 +20,45 @@ from app.services.sync_service import author_names, post_out
 
 router = APIRouter(prefix="/posts", tags=["posts"])
 
+Cursor = tuple[datetime, uuid.UUID | None]
+
+
+def parse_before(before: str | None) -> Cursor | None:
+    """`before` = "<ISO server_updated_at>|<post id>" (value of `next_before`, D-63).
+
+    A plain ISO datetime (former format) is still accepted.
+    """
+    if before is None:
+        return None
+    ts_part, _, id_part = before.partition("|")
+    try:
+        ts = to_utc(datetime.fromisoformat(ts_part.strip()))
+        post_id = uuid.UUID(id_part.strip()) if id_part.strip() else None
+    except ValueError as e:
+        raise ApiError(422, "validation_error", "Curseur « before » invalide.") from e
+    return ts, post_id
+
+
+def cursor_of(p: m.Post) -> str:
+    return f"{iso_z(p.server_updated_at)}|{p.id}"
+
 
 async def recent_posts(
-    session: AsyncSession, zone_id: str, before: datetime | None, limit: int
+    session: AsyncSession, zone_id: str, before: Cursor | None, limit: int
 ) -> tuple[list[dict], str | None]:
     q = select(m.Post).where(m.Post.zone_id == zone_id, m.Post.deleted.is_(False))
     if before is not None:
-        q = q.where(m.Post.server_updated_at < to_utc(before))
-    rows = (
-        (await session.execute(q.order_by(m.Post.server_updated_at.desc()).limit(limit + 1)))
-        .scalars()
-        .all()
-    )
+        ts, post_id = before
+        older = m.Post.server_updated_at < ts
+        if post_id is not None:  # same instant: continue after this id (no post skipped)
+            older = or_(older, and_(m.Post.server_updated_at == ts, m.Post.id < post_id))
+        q = q.where(older)
+    q = q.order_by(m.Post.server_updated_at.desc(), m.Post.id.desc()).limit(limit + 1)
+    rows = (await session.execute(q)).scalars().all()
     page = rows[:limit]
     names = await author_names(session, {p.device_id for p in page})
     posts = [post_out(p, None, names.get(p.device_id)) for p in page]
-    next_before = iso_z(page[-1].server_updated_at) if len(rows) > limit else None
+    next_before = cursor_of(page[-1]) if len(rows) > limit else None
     for p in posts:
         p.pop("is_mine")
     return posts, next_before
@@ -45,14 +67,14 @@ async def recent_posts(
 @router.get("", response_model=PostsPage)
 async def list_posts(
     zone_id: str,
-    before: Annotated[UtcDatetime | None, Query()] = None,
+    before: str | None = Query(default=None, max_length=100, description="next_before"),
     limit: int = Query(default=20, ge=1, le=100),
     session: AsyncSession = Depends(get_session),
     seed: SeedData = Depends(get_seed),
 ):
     if zone_id not in {z.zone_id for z in seed.zones}:
         raise ApiError(404, "unknown_zone", f"Zone inconnue : {zone_id}")
-    posts, next_before = await recent_posts(session, zone_id, before, limit)
+    posts, next_before = await recent_posts(session, zone_id, parse_before(before), limit)
     return PostsPage(posts=posts, next_before=next_before)
 
 

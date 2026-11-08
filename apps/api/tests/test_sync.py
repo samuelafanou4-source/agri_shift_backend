@@ -95,7 +95,9 @@ async def test_push_then_pull(client):
     again = (
         await client.get(f"{API}/sync/pull", params={"since": pulled["server_time"]}, headers=h)
     ).json()
-    assert again["changes"] == {"plots": [], "plot_seasons": [], "posts": []}
+    # Pushed less than PULL_OVERLAP ago: sent again, identical (D-62); the client upserts by id.
+    assert again["changes"]["plots"] == pulled["changes"]["plots"]
+    assert again["server_time"] >= pulled["server_time"]
 
 
 async def test_last_write_wins(client):

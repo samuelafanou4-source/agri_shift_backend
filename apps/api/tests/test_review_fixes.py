@@ -102,10 +102,11 @@ def test_server_clock_is_strictly_increasing(monkeypatch):
 
 
 async def test_push_then_pull_twice_with_a_coarse_clock(client, monkeypatch):
-    """Same wall-clock tick for push and pull (Windows): the second pull must be empty, i.e.
-    rows pushed before a pull are never re-sent by the next pull (was flaky)."""
+    """Same wall-clock tick for push and pull (Windows): without the deliberate overlap, the
+    second pull must be empty, i.e. the server clock alone never re-sends rows (was flaky)."""
     from app.services import clock
 
+    monkeypatch.setattr(sync_service, "PULL_OVERLAP", timedelta(0))
     monkeypatch.setattr(clock, "_last", clock._last)  # restored after the test
     tick = datetime(2031, 1, 1, tzinfo=UTC)
     monkeypatch.setattr(clock, "_wall", lambda: tick)
@@ -275,3 +276,82 @@ def test_alembic_migration_matches_models(tmp_path: Path):
     finally:
         eng.dispose()
     assert diff == []
+
+
+# ---------------------------------------------------------------- contract changes (Q-1..Q-4)
+async def test_deleted_post_of_another_device_has_no_text(client):
+    """D-60: a tombstone from another device no longer carries the deleted text."""
+    author = await _register(client)
+    reader = await _register(client)
+    post = {"id": str(uuid.uuid4()), "zone_id": "kara_kara", "body": "Mon numéro : 90 00 00 00",
+            "updated_at": T1}  # fmt: skip
+    await client.post(f"{API}/sync/push", headers=author, json={"changes": {"posts": [post]}})
+    deleted = {**post, "updated_at": "2026-11-10T10:00:00Z", "deleted": True}
+    await client.post(f"{API}/sync/push", headers=author, json={"changes": {"posts": [deleted]}})
+    seen = (await client.get(f"{API}/sync/pull", headers=reader)).json()["changes"]["posts"]
+    assert [(p["id"], p["deleted"], p["body"]) for p in seen] == [(post["id"], True, "")]
+    own = (await client.get(f"{API}/sync/pull", headers=author)).json()["changes"]["posts"]
+    assert own[0]["body"] == post["body"]  # the author keeps its own text
+
+
+async def test_push_is_limited_to_500_rows_per_entity(client):
+    """D-61: an unbounded push could hold a transaction (and the server) for minutes."""
+    headers = await _register(client)
+    rows = [_plot() for _ in range(501)]
+    r = await client.post(f"{API}/sync/push", headers=headers, json={"changes": {"plots": rows}})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "validation_error"
+
+
+async def test_pull_cursor_overlaps_recent_rows(client, monkeypatch):
+    """D-62: server_time lags 5 s behind, so a row committed just after a pull is not lost;
+    rows older than the overlap are not sent again."""
+    from app.services import clock
+
+    monkeypatch.setattr(clock, "_last", clock._last)
+    now = [datetime(2032, 1, 1, 12, tzinfo=UTC)]
+    monkeypatch.setattr(clock, "_wall", lambda: now[0])
+    headers = await _register(client)
+    p = _plot()
+    await client.post(f"{API}/sync/push", headers=headers, json={"changes": {"plots": [p]}})
+    now[0] += timedelta(seconds=1)
+    first = (await client.get(f"{API}/sync/pull", headers=headers)).json()
+    assert first["server_time"] == "2032-01-01T11:59:56Z"  # pull time - 5 s
+    again = await client.get(f"{API}/sync/pull", params={"since": first["server_time"]},
+                             headers=headers)  # fmt: skip
+    assert [x["id"] for x in again.json()["changes"]["plots"]] == [p["id"]]  # within overlap
+    now[0] += timedelta(seconds=10)
+    later = (await client.get(f"{API}/sync/pull", params={"since": first["server_time"]},
+                              headers=headers)).json()  # fmt: skip
+    final = await client.get(f"{API}/sync/pull", params={"since": later["server_time"]},
+                             headers=headers)  # fmt: skip
+    assert final.json()["changes"]["plots"] == []  # older than the overlap: not re-sent
+
+
+async def test_posts_cursor_never_skips_posts_with_the_same_timestamp(client, seeded_db):
+    """D-63: next_before = "<timestamp>|<id>"; three posts at the same instant are all listed."""
+    headers = await _register(client)
+    device = await _device(seeded_db, headers)
+    same = datetime(2026, 11, 10, 12, tzinfo=UTC)
+    ids = sorted(uuid.uuid4() for _ in range(3))
+    async with seeded_db.session_factory() as s:
+        for pid in ids:
+            s.add(m.Post(id=pid, device_id=device.device_id, zone_id="kara_kara", body=str(pid),
+                         updated_at=same, server_updated_at=same, deleted=False))  # fmt: skip
+        await s.commit()
+    seen, before = [], None
+    for _ in range(4):
+        params = {"zone_id": "kara_kara", "limit": 2, **({"before": before} if before else {})}
+        page = (await client.get(f"{API}/posts", params=params)).json()
+        seen += [p["id"] for p in page["posts"]]
+        before = page["next_before"]
+        if before is None:
+            break
+        assert before.endswith(f"|{seen[-1]}")
+    assert seen == [str(i) for i in reversed(ids)]
+    # Former format (plain datetime) still accepted; garbage is a validation error.
+    r = await client.get(
+        f"{API}/posts", params={"zone_id": "kara_kara", "before": "2030-01-01T00:00:00Z"}
+    )
+    assert r.status_code == 200 and len(r.json()["posts"]) == 3
+    r = await client.get(f"{API}/posts", params={"zone_id": "kara_kara", "before": "hier|x"})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "validation_error"

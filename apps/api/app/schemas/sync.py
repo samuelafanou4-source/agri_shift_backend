@@ -12,6 +12,7 @@ from app.schemas.reference import Priority
 
 MAX_BODY = 1000
 MAX_NOTE = 1000
+MAX_PUSH_ROWS = 500  # per entity and per push (D-61): bigger batches are sent in several pushes
 
 
 def to_utc(dt: datetime) -> datetime:
@@ -105,9 +106,9 @@ class PostIn(_SyncRow):
 class PushChanges(BaseModel):
     """Rows are validated one by one by the service (an invalid row is rejected, not the batch)."""
 
-    plots: list[dict] = Field(default_factory=list)
-    plot_seasons: list[dict] = Field(default_factory=list)
-    posts: list[dict] = Field(default_factory=list)
+    plots: list[dict] = Field(default_factory=list, max_length=MAX_PUSH_ROWS)
+    plot_seasons: list[dict] = Field(default_factory=list, max_length=MAX_PUSH_ROWS)
+    posts: list[dict] = Field(default_factory=list, max_length=MAX_PUSH_ROWS)
 
 
 class PushRequest(BaseModel):

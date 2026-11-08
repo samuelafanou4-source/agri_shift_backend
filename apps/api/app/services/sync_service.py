@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import or_, select
@@ -28,6 +28,10 @@ from app.services.device_service import now_utc
 from app.services.reference_data import SeedData
 
 PULL_PAGE_SIZE = 500
+# `server_time` of a final pull page lags this much behind the server clock (D-62): rows stamped
+# just before but committed just after the pull are sent again by the next pull instead of
+# being skipped. Clients upsert rows by `id`, so a re-sent row is harmless.
+PULL_OVERLAP = timedelta(seconds=5)
 EPOCH = datetime(1970, 1, 1)
 
 
@@ -61,15 +65,20 @@ def season_out(s: m.PlotSeason) -> dict:
 
 
 def post_out(p: m.Post, me: uuid.UUID | None, author_name: str | None) -> dict:
-    """Public view of a post: never exposes the author's device_id."""
+    """Public view of a post: never exposes the author's device_id.
+
+    A deleted post of another device is sent as a tombstone without its text (D-60): the
+    author deleted it, other phones must not keep (or newly receive) the message.
+    """
+    is_mine = me is not None and p.device_id == me
     return {
         "id": str(p.id),
         "zone_id": p.zone_id,
-        "body": p.body,
+        "body": "" if p.deleted and not is_mine else p.body,
         "updated_at": iso_z(p.updated_at),
         "deleted": p.deleted,
         "server_updated_at": iso_z(p.server_updated_at),
-        "is_mine": me is not None and p.device_id == me,
+        "is_mine": is_mine,
         "author_name": author_name,
     }
 
@@ -219,6 +228,8 @@ class SyncService:
     async def pull(self, since: datetime | None, limit: int = PULL_PAGE_SIZE) -> PullResponse:
         server_time = server_now()  # before querying: rows stamped later are > server_time
         since = to_utc(since) if since else to_utc(EPOCH)
+        # Next cursor: a little in the past (D-62), but never before the cursor received.
+        next_cursor = max(since, server_time - PULL_OVERLAP)
         me = self.device.device_id
         n = limit + 1
         plots = (
@@ -278,7 +289,7 @@ class SyncService:
         if len(merged) > limit:
             cursor = iso_z(page[-1][0])
             return PullResponse(changes=out, server_time=cursor, next_since=cursor)
-        return PullResponse(changes=out, server_time=iso_z(server_time))
+        return PullResponse(changes=out, server_time=iso_z(next_cursor))
 
 
 async def author_names(session: AsyncSession, device_ids: set) -> dict:
