@@ -872,19 +872,21 @@ Les raisons de refus **par ligne** du push (`stale`, `forbidden`, `invalid`, `un
 
 ### 3.6 CORS
 
-- Origine autorisée aujourd'hui : **`http://localhost:3000`** uniquement.
-- Méthodes et en-têtes : tous ; l'en-tête `ETag` est exposé au JavaScript.
+- Origines autorisées : **`https://agrishift-tg.vercel.app`** (la PWA en production) et **`http://localhost:3000`** (développement local).
+- Méthodes et en-têtes : tous (`X-Device-Token` et `If-None-Match` compris) ; l'en-tête `ETag` est exposé au JavaScript (`access-control-expose-headers: ETag`), y compris sur les réponses 304.
 - Pas de cookies ni d'identifiants (`credentials` inutile).
 - Une autre origine n'obtient pas `Access-Control-Allow-Origin`, et le navigateur bloque la réponse.
 
-Pré-requête réelle, depuis `http://localhost:3000`, pour `POST /sync/push` avec `x-device-token` :
+Vérifié en production le 2026-11-08 depuis `https://agrishift-tg.vercel.app` :
 
-```
-access-control-allow-origin: http://localhost:3000
-access-control-allow-methods: DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT, QUERY
-access-control-allow-headers: x-device-token,content-type
-access-control-max-age: 600
-```
+| Requête | Réponse |
+|---|---|
+| `GET /health` | `200`, `access-control-allow-origin: https://agrishift-tg.vercel.app`, `access-control-expose-headers: ETag` |
+| `OPTIONS /sync/push` (méthode `POST`, en-têtes `content-type, x-device-token`) | `200`, `access-control-allow-headers: content-type, x-device-token`, `access-control-max-age: 600` |
+| `OPTIONS /packs/kara_kara` (méthode `GET`, en-tête `if-none-match`) | `200`, `access-control-allow-headers: if-none-match` |
+| `GET /packs/kara_kara` avec `If-None-Match` | `304`, `etag: "9d37a0cc…"`, `access-control-expose-headers: ETag` |
+| `GET /health` depuis `https://exemple.com` | `200`, **sans** `access-control-allow-origin` : le navigateur bloque la réponse |
+| `OPTIONS` depuis `https://exemple.com` | `400` en texte brut `Disallowed CORS origin` (réponse du middleware CORS, pas au format JSON commun) |
 
 **Pour ajouter une origine** (production, prévisualisation Vercel…) : envoyez au responsable du backend l'origine exacte, au format `https://mon-app.example.org` (schéma + hôte + port éventuel, sans chemin ni `/` final). Plusieurs origines sont possibles, séparées par des virgules dans `FRONTEND_ORIGIN`. Le changement prend effet après redéploiement.
 

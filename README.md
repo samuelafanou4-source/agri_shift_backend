@@ -97,7 +97,7 @@ Variables d'environnement définies sur l'app (aucune valeur secrète ici) :
 | `DATABASE_URL` | **secret** : URL Supabase Session pooler (port 5432, `?ssl=require`), voir [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md) |
 | `PACKS_DIR` | `packs` |
 | `DATA_DIR` | `data` |
-| `FRONTEND_ORIGIN` | `http://localhost:3000` (⚠️ à remplacer par l'URL du frontend en production) |
+| `FRONTEND_ORIGIN` | `http://localhost:3000,https://agrishift-tg.vercel.app` (PWA en production + développement local) |
 | `TRUST_PROXY_HEADERS` | `true` |
 
 **Règle** : l'app ne lance ni migration ni seed au démarrage. **Migration et seed se font toujours depuis le PC**, et **`scripts/prepare_deploy.ps1` se lance après chaque reconstruction des paquets** (ou modification de `data/seed/`) :

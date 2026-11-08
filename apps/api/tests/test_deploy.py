@@ -94,3 +94,26 @@ def test_repo_root_when_only_apps_api_is_deployed():
 
     assert repo_root(PurePosixPath("/app")) == PurePosixPath("/app")
     assert repo_root(PurePosixPath("/home/u/repo/apps/api")) == PurePosixPath("/home/u/repo")
+
+
+async def test_cors_pack_etag_readable_by_the_pwa(settings, seeded_db):
+    """The PWA (another origin) must be able to send If-None-Match and read the ETag (200/304)."""
+    vercel = "https://agrishift-tg.vercel.app"
+    s = settings.model_copy(update={"frontend_origin": f"http://localhost:3000,{vercel}"})
+    app = create_app(s, database=seeded_db)
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
+        pre = await c.options(f"{API}/packs/kara_kara", headers={
+            "Origin": vercel, "Access-Control-Request-Method": "GET",
+            "Access-Control-Request-Headers": "if-none-match"})  # fmt: skip
+        assert pre.status_code == 200 and pre.headers["access-control-allow-origin"] == vercel
+        assert "if-none-match" in pre.headers["access-control-allow-headers"].lower()
+        r = await c.get(f"{API}/packs/kara_kara", headers={"Origin": vercel})
+        assert r.headers["access-control-expose-headers"] == "ETag"
+        r304 = await c.get(
+            f"{API}/packs/kara_kara", headers={"Origin": vercel, "If-None-Match": r.headers["etag"]}
+        )
+        assert r304.status_code == 304
+        assert r304.headers["access-control-allow-origin"] == vercel
+        assert r304.headers["access-control-expose-headers"] == "ETag"
+        other = await c.get(f"{API}/health", headers={"Origin": "https://exemple.com"})
+        assert "access-control-allow-origin" not in other.headers
