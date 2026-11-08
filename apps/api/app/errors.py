@@ -2,10 +2,15 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException as StarletteHTTPException
+
+log = logging.getLogger(__name__)
 
 
 class ApiError(Exception):
@@ -56,4 +61,21 @@ def install_error_handlers(app: FastAPI) -> None:
         return JSONResponse(
             status_code=422,
             content=error_body("validation_error", "Données invalides.", details=details),
+        )
+
+    @app.exception_handler(IntegrityError)
+    async def _integrity_error(_: Request, exc: IntegrityError) -> JSONResponse:
+        # Concurrent writes (same client UUID inserted twice at the same time) end up here.
+        log.warning("integrity error: %s", exc.orig)
+        return JSONResponse(
+            status_code=409,
+            content=error_body("conflict", "Conflit avec l'état du serveur, réessayez."),
+        )
+
+    @app.exception_handler(Exception)
+    async def _unexpected_error(_: Request, exc: Exception) -> JSONResponse:
+        # Same JSON format as every other error (§10.8); details only in the server log.
+        log.exception("unhandled error", exc_info=exc)
+        return JSONResponse(
+            status_code=500, content=error_body("internal_error", "Erreur interne du serveur.")
         )

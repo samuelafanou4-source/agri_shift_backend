@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from pydantic import BaseModel, ValidationError
 from sqlalchemy import or_, select
@@ -23,6 +23,7 @@ from app.schemas.sync import (
     iso_z,
     to_utc,
 )
+from app.services.clock import server_now
 from app.services.device_service import now_utc
 from app.services.reference_data import SeedData
 
@@ -110,13 +111,19 @@ class SyncService:
         self.zones = {z.zone_id for z in seed.zones}
         self.soils = {x.soil_id for x in seed.soils}
         self.crops = {c.crop_id for c in seed.crops}
-        self._clock = now_utc()
-        self._tick = 0
+        self._written: list = []  # rows written by this push, in processing order
 
-    def _server_ts(self) -> datetime:
-        """Strictly increasing server timestamps inside one push (stable pull pagination)."""
-        self._tick += 1
-        return self._clock + timedelta(microseconds=self._tick)
+    def _stamp_written(self) -> None:
+        """Give the written rows strictly increasing server timestamps (`server_now`), right
+        before COMMIT.
+
+        Stamping at the end (not when each row is processed) keeps the gap between the
+        timestamp and the commit to a single round trip: a pull running during a long push
+        cannot capture a `server_time` later than rows that are still uncommitted, which would
+        otherwise be skipped forever by the next `since` (DECISIONS D-53).
+        """
+        for obj in self._written:
+            obj.server_updated_at = server_now()
 
     def _check_refs(self, entity: str, row: BaseModel) -> None:
         zone = getattr(row, "zone_id", None)
@@ -170,17 +177,17 @@ class SyncService:
             for k, v in values.items():
                 setattr(existing, k, v)
             existing.updated_at = row.updated_at
-            existing.server_updated_at = self._server_ts()
+            self._written.append(existing)
         else:
-            self.s.add(
-                model(
-                    id=row.id,
-                    device_id=self.device.device_id,
-                    updated_at=row.updated_at,
-                    server_updated_at=self._server_ts(),
-                    **values,
-                )
+            obj = model(
+                id=row.id,
+                device_id=self.device.device_id,
+                updated_at=row.updated_at,
+                server_updated_at=now_utc(),  # provisional, re-stamped before commit
+                **values,
             )
+            self.s.add(obj)
+            self._written.append(obj)
         await self.s.flush()
         return str(row.id)
 
@@ -204,12 +211,13 @@ class SyncService:
                             server_row=r.server_row,
                         )
                     )
+        self._stamp_written()
         await self.s.commit()
-        return PushResponse(accepted=accepted, rejected=rejected, server_time=iso_z(now_utc()))
+        return PushResponse(accepted=accepted, rejected=rejected, server_time=iso_z(server_now()))
 
     # ------------------------------------------------------------ pull
     async def pull(self, since: datetime | None, limit: int = PULL_PAGE_SIZE) -> PullResponse:
-        server_time = now_utc()  # captured before querying: later writes are seen next time
+        server_time = server_now()  # before querying: rows stamped later are > server_time
         since = to_utc(since) if since else to_utc(EPOCH)
         me = self.device.device_id
         n = limit + 1

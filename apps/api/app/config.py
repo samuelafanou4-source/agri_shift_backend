@@ -31,6 +31,15 @@ class Settings(BaseSettings):
     log_level: str = "info"
 
     @property
+    def cors_origins(self) -> list[str]:
+        """FRONTEND_ORIGIN, comma-separated for several origins (e.g. production + preview).
+
+        A trailing "/" is removed: browsers send the Origin header without it, so
+        "https://app.example.org/" would never match and every request would be blocked by CORS.
+        """
+        return [o.strip().rstrip("/") for o in self.frontend_origin.split(",") if o.strip()]
+
+    @property
     def packs_path(self) -> Path:
         return _resolve(self.packs_dir)
 

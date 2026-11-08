@@ -4,8 +4,9 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, date, datetime
+from typing import Annotated, Any
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator
 
 from app.schemas.reference import Priority
 
@@ -14,8 +15,19 @@ MAX_NOTE = 1000
 
 
 def to_utc(dt: datetime) -> datetime:
-    """Aware UTC datetime (naive values are assumed UTC; SQLite returns naive)."""
-    return dt.replace(tzinfo=UTC) if dt.tzinfo is None else dt.astimezone(UTC)
+    """Aware UTC datetime (naive values are assumed UTC; SQLite returns naive).
+
+    Raises ValueError (not OverflowError) when the UTC conversion leaves the datetime range
+    (e.g. 0001-01-01T00:00+05:00), so that Pydantic reports a validation error instead of a 500.
+    """
+    try:
+        return dt.replace(tzinfo=UTC) if dt.tzinfo is None else dt.astimezone(UTC)
+    except OverflowError as e:
+        raise ValueError("date hors limites") from e
+
+
+# Datetime from a client (body or query string), normalised to aware UTC.
+UtcDatetime = Annotated[datetime, AfterValidator(to_utc)]
 
 
 def iso_z(dt: datetime | None) -> str | None:
@@ -24,6 +36,14 @@ def iso_z(dt: datetime | None) -> str | None:
 
 class _In(BaseModel):
     model_config = ConfigDict(extra="ignore", str_strip_whitespace=True)
+
+    @field_validator("*", mode="after")
+    @classmethod
+    def _no_nul(cls, v: Any) -> Any:
+        # PostgreSQL text/varchar cannot store U+0000 (asyncpg raises -> HTTP 500): reject it.
+        if isinstance(v, str) and "\x00" in v:
+            raise ValueError("caractère NUL interdit")
+        return v
 
 
 # ---------------------------------------------------------------- devices
@@ -57,13 +77,8 @@ class DeviceProfile(BaseModel):
 # ---------------------------------------------------------------- synced rows (client -> server)
 class _SyncRow(_In):
     id: uuid.UUID
-    updated_at: datetime
+    updated_at: UtcDatetime
     deleted: bool = False
-
-    @field_validator("updated_at")
-    @classmethod
-    def _utc(cls, v: datetime) -> datetime:
-        return to_utc(v)
 
 
 class PlotIn(_SyncRow):

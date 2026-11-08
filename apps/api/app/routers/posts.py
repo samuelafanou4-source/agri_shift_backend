@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy import select
@@ -12,8 +13,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app import models as m
 from app.deps import get_seed, get_session
 from app.errors import ApiError
-from app.schemas.sync import PostCreate, PostsPage, iso_z, to_utc
-from app.services.device_service import current_device, now_utc
+from app.schemas.sync import PostCreate, PostsPage, UtcDatetime, iso_z, to_utc
+from app.services.clock import server_now
+from app.services.device_service import current_device
 from app.services.reference_data import SeedData
 from app.services.sync_service import author_names, post_out
 
@@ -43,7 +45,7 @@ async def recent_posts(
 @router.get("", response_model=PostsPage)
 async def list_posts(
     zone_id: str,
-    before: datetime | None = None,
+    before: Annotated[UtcDatetime | None, Query()] = None,
     limit: int = Query(default=20, ge=1, le=100),
     session: AsyncSession = Depends(get_session),
     seed: SeedData = Depends(get_seed),
@@ -66,7 +68,7 @@ async def create_post(
     post_id = body.id or uuid.uuid4()
     if await session.get(m.Post, post_id) is not None:
         raise ApiError(409, "post_exists", "Un message avec cet identifiant existe déjà.")
-    now = now_utc()
+    now = server_now()
     post = m.Post(
         id=post_id,
         device_id=device.device_id,
@@ -92,7 +94,7 @@ async def delete_post(
         raise ApiError(404, "unknown_post", "Message introuvable.")
     if post.device_id != device.device_id:
         raise ApiError(403, "forbidden", "Seul l'auteur peut supprimer ce message.")
-    now = now_utc()
+    now = server_now()
     post.deleted = True
     post.updated_at = now
     post.server_updated_at = now
