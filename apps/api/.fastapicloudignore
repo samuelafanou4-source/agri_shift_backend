@@ -1,0 +1,21 @@
+# Files NOT uploaded by `fastapi deploy` (gitignore syntax; .gitignore rules also apply).
+# The CLI already skips .env*, .venv, __pycache__, *.pyc, .pytest_cache, .mypy_cache, .git.
+
+# Tests (and their fixtures): not needed at runtime
+tests/
+
+# Local databases and secrets
+*.db
+*.sqlite
+*.sqlite3
+.env
+.env.*
+
+# Tool caches and build artefacts
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Not used by FastAPI Cloud (Docker image for other hosts)
+Dockerfile

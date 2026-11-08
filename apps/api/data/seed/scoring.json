@@ -1,0 +1,16 @@
+{
+  "season_resilience_base": { "food_security": 20, "drought_resilience": 30, "balanced": 25 },
+  "priority_bonus": {
+    "food_security": { "food_staple": 5, "drought_level_factor": 0 },
+    "drought_resilience": { "food_staple": 0, "drought_level_factor": 2 },
+    "balanced": { "food_staple": 2.5, "drought_level_factor": 1 }
+  },
+  "drought_levels": { "low": 0, "low_medium": 1, "medium": 2, "medium_high": 3, "high": 4 },
+  "phase_weights": { "initial": 0.5, "development": 1.0, "mid": 2.0, "late": 0.5 },
+  "et0_temp_sensitivity_per_c": 0.03,
+  "initial_soil_water_fraction": 0.5,
+  "horizon_default": 3,
+  "horizon_max": 4,
+  "top_n": 3,
+  "source_type": "provisional_demo"
+}

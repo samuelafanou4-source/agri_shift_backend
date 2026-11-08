@@ -67,13 +67,15 @@ L'API lit ses réglages dans les variables d'environnement, ou à défaut dans l
 ```dotenv
 # Postgres (Supabase, Session pooler port 5432) ; sans cette ligne : SQLite local apps/api/fieldshift.db
 DATABASE_URL=postgresql+asyncpg://postgres.<ref>:<mot_de_passe>@<hote-pooler>:5432/postgres?ssl=require
-# Chemins relatifs résolus depuis apps/api
-PACKS_DIR=../../packs
-DATA_DIR=../../data
+# Chemins relatifs résolus depuis apps/api (copies faites par scripts/prepare_deploy.ps1)
+PACKS_DIR=packs
+DATA_DIR=data
 # Une ou plusieurs origines du frontend, séparées par des virgules
 FRONTEND_ORIGIN=http://localhost:3000
 RATE_LIMIT_PER_MIN=60
 LOG_LEVEL=info
+# true derrière le proxy de FastAPI Cloud (IP client prise dans X-Forwarded-For) ; false par défaut
+TRUST_PROXY_HEADERS=false
 ```
 
 Variantes de `DATABASE_URL` : Postgres local de `docker-compose.yml` → `postgresql+asyncpg://postgres:postgres@localhost:5432/fieldshift` ; SQLite → `sqlite+aiosqlite:///./fieldshift.db`. Mise en place de Supabase : [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md).

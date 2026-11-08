@@ -1,0 +1,49 @@
+[
+  {
+    "rule_id": "R001",
+    "effect": "bonus",
+    "delta": 10,
+    "all": [
+      { "field": "prev.family", "op": "eq", "value": "Fabaceae" },
+      { "field": "next.family", "op": "eq", "value": "Poaceae" }
+    ],
+    "explanation_fr": "Une légumineuse avant une céréale enrichit le sol en azote.",
+    "source_type": "provisional_demo",
+    "source_note": "Reprise de R001 du pack AGRI SHIFT, au format structuré. Score logiciel, à valider par un agronome."
+  },
+  {
+    "rule_id": "R002",
+    "effect": "penalty",
+    "delta": -5,
+    "all": [
+      { "field": "prev.family", "op": "eq_field", "value": "next.family" }
+    ],
+    "explanation_fr": "Même famille deux saisons de suite : plus de ravageurs et sol appauvri.",
+    "source_type": "provisional_demo",
+    "source_note": "Reprise de R002 du pack AGRI SHIFT, au format structuré. Score logiciel, à valider par un agronome."
+  },
+  {
+    "rule_id": "R003",
+    "effect": "penalty",
+    "delta": -10,
+    "all": [
+      { "field": "next.water_need", "op": "eq", "value": "high" },
+      { "field": "scenario.rainfall_change_pct", "op": "lt", "value": 0 }
+    ],
+    "explanation_fr": "Culture très gourmande en eau dans un scénario plus sec.",
+    "source_type": "provisional_demo",
+    "source_note": "R003 du pack corrigée : l'ancienne condition « scenario == 'dry' » ne se déclenchait jamais. Score logiciel, à valider par un agronome."
+  },
+  {
+    "rule_id": "R004",
+    "effect": "bonus",
+    "delta": 5,
+    "all": [
+      { "field": "prev.family", "op": "eq", "value": "Poaceae" },
+      { "field": "next.family", "op": "eq", "value": "Fabaceae" }
+    ],
+    "explanation_fr": "Une légumineuse après une céréale aide le sol à se reconstituer.",
+    "source_type": "provisional_demo",
+    "source_note": "Règle ajoutée par la spécification backend §8.5. Score logiciel, à valider par un agronome."
+  }
+]

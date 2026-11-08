@@ -14,7 +14,7 @@ import asyncio
 import json
 import sys
 
-from app.config import REPO_ROOT, get_settings
+from app.config import REPO_DATA_DIR, REPO_PACKS_DIR, REPO_ROOT, get_settings
 from app.db import Database
 from app.services.reference_data import load_seed
 from app.services.seed_service import seed_all, seed_climate_dekad
@@ -24,18 +24,24 @@ if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
 
+def _source_dirs() -> tuple:
+    """(data, packs) folders with the full pipeline outputs: the repository's data/ and packs/
+    when present (developer's PC), otherwise the configured DATA_DIR / PACKS_DIR."""
+    settings = get_settings()
+    data = REPO_DATA_DIR if (REPO_DATA_DIR / "synthetic").is_dir() else settings.data_path
+    packs = REPO_PACKS_DIR if REPO_PACKS_DIR.is_dir() else settings.packs_path
+    return data, packs
+
+
 async def _seed(database_url: str | None) -> dict[str, int]:
     settings = get_settings()
+    data, packs = _source_dirs()
     db = Database(database_url or settings.database_url)
     try:
-        seed = load_seed(settings.seed_path)
+        seed = load_seed(data / "seed")
         async with db.session_factory() as session:
-            counts = await seed_all(
-                session, seed, settings.data_path / "synthetic" / "parcelles_demo.json"
-            )
-            counts["climate_dekad"] = await seed_climate_dekad(
-                session, settings.data_path / "processed", settings.packs_path
-            )
+            counts = await seed_all(session, seed, data / "synthetic" / "parcelles_demo.json")
+            counts["climate_dekad"] = await seed_climate_dekad(session, data / "processed", packs)
             return counts
     finally:
         await db.dispose()
@@ -70,10 +76,8 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "export-golden":
         from app.services.golden import export_golden
 
-        settings = get_settings()
-        out = export_golden(
-            settings.packs_path, settings.data_path / "synthetic" / "parcelles_demo.json"
-        )
+        data, packs = _source_dirs()
+        out = export_golden(packs, data / "synthetic" / "parcelles_demo.json")
         n = len(json.loads(out.read_text(encoding="utf-8"))["cases"])
         print(f"Golden OK: {n} cases -> {out}")
     elif args.command == "build-packs":

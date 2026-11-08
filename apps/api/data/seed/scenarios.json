@@ -1,0 +1,9 @@
+[
+  { "scenario_id": "baseline", "label_fr": "Référence (climat moyen)", "rainfall_change_pct": 0, "temperature_change_c": 0, "source_type": "synthetic_scenario", "note_fr": "Stress-test hypothétique, pas une prévision." },
+  { "scenario_id": "dry_minus10", "label_fr": "Pluie −10 %", "rainfall_change_pct": -10, "temperature_change_c": 0, "source_type": "synthetic_scenario", "note_fr": "Stress-test hypothétique, pas une prévision." },
+  { "scenario_id": "dry_minus20", "label_fr": "Pluie −20 %", "rainfall_change_pct": -20, "temperature_change_c": 0, "source_type": "synthetic_scenario", "note_fr": "Stress-test hypothétique, pas une prévision." },
+  { "scenario_id": "dry_minus30", "label_fr": "Pluie −30 %", "rainfall_change_pct": -30, "temperature_change_c": 0, "source_type": "synthetic_scenario", "note_fr": "Stress-test hypothétique, pas une prévision." },
+  { "scenario_id": "hot_plus1", "label_fr": "Température +1 °C", "rainfall_change_pct": 0, "temperature_change_c": 1, "source_type": "synthetic_scenario", "note_fr": "Stress-test hypothétique, pas une prévision." },
+  { "scenario_id": "hot_plus2", "label_fr": "Température +2 °C", "rainfall_change_pct": 0, "temperature_change_c": 2, "source_type": "synthetic_scenario", "note_fr": "Stress-test hypothétique, pas une prévision." },
+  { "scenario_id": "dry_hot", "label_fr": "Pluie −20 % et +2 °C", "rainfall_change_pct": -20, "temperature_change_c": 2, "source_type": "synthetic_scenario", "note_fr": "Stress-test hypothétique, pas une prévision." }
+]

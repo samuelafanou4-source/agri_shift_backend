@@ -1,0 +1,6 @@
+[
+  { "soil_id": "sandy", "label_fr": "Sableux", "taw_mm_per_m": 70, "source_type": "provisional_demo", "source_note": "Réserve utile : ordre de grandeur inspiré de FAO-56, à valider par un agronome." },
+  { "soil_id": "sandy_loam", "label_fr": "Sablo-limoneux", "taw_mm_per_m": 110, "source_type": "provisional_demo", "source_note": "Réserve utile : ordre de grandeur inspiré de FAO-56, à valider par un agronome." },
+  { "soil_id": "loam", "label_fr": "Limoneux", "taw_mm_per_m": 140, "source_type": "provisional_demo", "source_note": "Réserve utile : ordre de grandeur inspiré de FAO-56, à valider par un agronome." },
+  { "soil_id": "clay", "label_fr": "Argileux", "taw_mm_per_m": 170, "source_type": "provisional_demo", "source_note": "Réserve utile : ordre de grandeur inspiré de FAO-56, à valider par un agronome." }
+]

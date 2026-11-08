@@ -9,6 +9,10 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 API_ROOT = Path(__file__).resolve().parents[1]  # apps/api
 REPO_ROOT = API_ROOT.parents[1]  # repository root
+# Sources of truth on the developer's PC (pipeline outputs). The API itself reads the copies made
+# inside apps/api by scripts/prepare_deploy.ps1, because FastAPI Cloud only uploads apps/api.
+REPO_PACKS_DIR = REPO_ROOT / "packs"
+REPO_DATA_DIR = REPO_ROOT / "data"
 
 APP_VERSION = "0.1.0"
 
@@ -24,11 +28,15 @@ class Settings(BaseSettings):
 
     # Default = local SQLite file so the API runs on Windows without Docker.
     database_url: str = f"sqlite+aiosqlite:///{(API_ROOT / 'fieldshift.db').as_posix()}"
-    packs_dir: str = "../../packs"
-    data_dir: str = "../../data"
+    # Relative to apps/api (copies made by scripts/prepare_deploy.ps1, deployed with the API).
+    packs_dir: str = "packs"
+    data_dir: str = "data"
     frontend_origin: str = "http://localhost:3000"
     rate_limit_per_min: int = 60
     log_level: str = "info"
+    # Behind a trusted reverse proxy (FastAPI Cloud): take the client IP for the rate limiter
+    # from the last X-Forwarded-For entry (the one added by the proxy). Off by default.
+    trust_proxy_headers: bool = False
 
     @property
     def cors_origins(self) -> list[str]:

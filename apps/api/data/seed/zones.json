@@ -1,0 +1,46 @@
+[
+  {
+    "zone_id": "maritime_lome",
+    "name_fr": "Maritime",
+    "name_long_fr": "Maritime - point de référence Lomé",
+    "region": "Maritime",
+    "latitude": 6.1725,
+    "longitude": 1.2314,
+    "coordinate_note": "Point de référence approximatif (Lomé) ; pas une parcelle agricole.",
+    "seasons": [
+      { "season_id": "main", "label_fr": "Grande saison", "provisional_sowing_dekad": 10, "onset_search_from": 8, "onset_search_to": 14 },
+      { "season_id": "second", "label_fr": "Petite saison", "provisional_sowing_dekad": 25, "onset_search_from": 24, "onset_search_to": 28 }
+    ],
+    "source_type": "provisional_demo",
+    "source_note": "Coordonnées reprises du pack AGRI SHIFT (zones.json). Dates de semis provisoires et fenêtres de démarrage à valider localement."
+  },
+  {
+    "zone_id": "plateaux_kpalime",
+    "name_fr": "Plateaux",
+    "name_long_fr": "Plateaux - point de référence Kpalimé",
+    "region": "Plateaux",
+    "latitude": 6.9,
+    "longitude": 0.6333,
+    "coordinate_note": "Point de référence approximatif (Kpalimé) ; pas une parcelle agricole.",
+    "seasons": [
+      { "season_id": "main", "label_fr": "Grande saison", "provisional_sowing_dekad": 11, "onset_search_from": 8, "onset_search_to": 15 },
+      { "season_id": "second", "label_fr": "Petite saison", "provisional_sowing_dekad": 25, "onset_search_from": 24, "onset_search_to": 28 }
+    ],
+    "source_type": "provisional_demo",
+    "source_note": "Coordonnées reprises du pack AGRI SHIFT (zones.json). Dates de semis provisoires et fenêtres de démarrage à valider localement."
+  },
+  {
+    "zone_id": "kara_kara",
+    "name_fr": "Kara",
+    "name_long_fr": "Kara - point de référence Kara",
+    "region": "Kara",
+    "latitude": 9.5511,
+    "longitude": 1.1861,
+    "coordinate_note": "Point de référence approximatif (Kara) ; pas une parcelle agricole.",
+    "seasons": [
+      { "season_id": "main", "label_fr": "Saison des pluies", "provisional_sowing_dekad": 16, "onset_search_from": 13, "onset_search_to": 19 }
+    ],
+    "source_type": "provisional_demo",
+    "source_note": "Coordonnées reprises du pack AGRI SHIFT (zones.json). Dates de semis provisoires et fenêtres de démarrage à valider localement."
+  }
+]

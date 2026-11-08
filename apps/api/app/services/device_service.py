@@ -59,5 +59,21 @@ async def current_device(
     return device
 
 
+def client_ip(request: Request, trust_proxy_headers: bool) -> str:
+    """Client IP for the per-IP rate limit.
+
+    Behind FastAPI Cloud's proxy every request comes from the proxy's address. With
+    TRUST_PROXY_HEADERS, the LAST X-Forwarded-For entry is used: the proxy appends the address it
+    received the connection from, while earlier entries are whatever the client sent (spoofable).
+    """
+    if trust_proxy_headers:
+        forwarded = [p.strip() for p in request.headers.get("x-forwarded-for", "").split(",")]
+        forwarded = [p for p in forwarded if p]
+        if forwarded:
+            return forwarded[-1]
+    return request.client.host if request.client else "unknown"
+
+
 def client_key(request: Request) -> str:
-    return f"ip:{request.client.host if request.client else 'unknown'}"
+    trust = request.app.state.settings.trust_proxy_headers
+    return f"ip:{client_ip(request, trust)}"
