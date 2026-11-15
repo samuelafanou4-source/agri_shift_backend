@@ -1,5 +1,10 @@
 # API Field Shift Togo — guide du développeur frontend
 
+## Dernière vérification
+
+Date : **2026-11-15**.
+Le contrat de l'API n'a pas changé depuis le dernier déploiement. Les modifications récentes concernent uniquement les scripts de validation et la documentation.
+
 Ce document suffit pour brancher la PWA et réimplémenter le moteur en TypeScript, sans lire le code Python.
 Types TypeScript prêts à l'emploi : [`docs/api-types.ts`](api-types.ts).
 
